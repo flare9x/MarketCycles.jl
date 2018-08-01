@@ -77,14 +77,11 @@ julia> @doc AutoCorrelationReversals
   AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,
   LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
 ```
-The autocorrelation reversal function requires an input array of Float64 type. The arguments for the function require inputs for the autocorrelation min and max lag periods, the low and high pass filter lengths and the length of averaging within the autocorrelation calculation:
-
 Call the function as below for lags 1 to 48: 
 
  ```julia
 AutoCorrelationReversals(your_data,min_lag=1,max_lag=48,LPLength=10,HPLength=48,AvgLength=3)
  ```
-
 We may see what this looks like over dummy data: 
 
    ```julia
