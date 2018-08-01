@@ -6,7 +6,7 @@ Currently the original indicators shared in his book: Cycle Analytics for Trader
 
 Outside contributions are welcome! 
 
-# Available Indicators
+## Available Indicators
 
 *   Available Indicators
     *   Supersmoother
