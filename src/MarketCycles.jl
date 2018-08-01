@@ -1,5 +1,13 @@
+VERSION >= v"0.0.1" && __precompile__(true)
+
 module MarketCycles
 
-# package code goes here
+export
+    SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
+    ZeroMeanRoofingFilterP0, ZeroMeanRoofingFilterP1, RoofingFilterIndicator,
+    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, AutoCorrelationPeriodogram,
+    AutoCorrelationReversals
 
-end # module
+    include("ehlers_cycles.jl")
+
+end
