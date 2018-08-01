@@ -130,3 +130,18 @@ For the output:
 ![John Ehlers Autocorrelation Reversals](https://github.com/flare9x/MarketCycles.jl/blob/master/examples/auto_correlation_reversals_readme.png)
 
 One may line up the reversals to the turning points within the data!
+
+## Available Function Names 
+```julia
+SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
+    ZeroMeanRoofingFilterP0, ZeroMeanRoofingFilterP1, RoofingFilterIndicator,
+    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, 
+    AutoCorrelationPeriodogram, AutoCorrelationReversals
+```
+Feel free to explore any of the functions with:
+
+```julia
+@doc SuperSmoother
+```
+
+
