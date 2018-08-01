@@ -49,7 +49,7 @@ Outside contributions are welcome!
 Pkg.add("MarketCycles.jl")
 ``` 
 
-All inputs for each function requires a single dimension array of Float64 type. Each function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific function: 
+All inputs for each function requires a single dimension array of Float64 type. Each function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific market cycle function: 
 
    ```julia
 julia> @doc AutoCorrelationReversals
@@ -77,9 +77,9 @@ julia> @doc AutoCorrelationReversals
   AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,
   LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
 ```
-The autocorrelation reversl function requires an input x array of Float64 type and to specify a range of lags to iterate over during the calculation. 
+The autocorrelation reversal function requires an input array of Float64 type and specify a range of lags to iterate over during the calculation. 
 
-Call the function as below: 
+Call the function as below for lags 1 to 48: 
 
  ```julia
 AutoCorrelationReversals(your_data,min_lag=1,max_lag=48)
