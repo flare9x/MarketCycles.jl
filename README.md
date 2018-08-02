@@ -99,11 +99,11 @@ lo = op - rand(n)
 cl = 100.0 + cumsum(randn(n))
 index = collect(1:1:length(cl))
 for i = 1:n
-	if cl[i] > hi[i]
-		cl[i] = hi[i]
-	elseif cl[i] < lo[i]
-		cl[i] = lo[i]
-	end
+    if cl[i] > hi[i]
+        cl[i] = hi[i]
+    elseif cl[i] < lo[i]
+        cl[i] = lo[i]
+    end
 end
 
 # Apply autocorrelation reversals function
