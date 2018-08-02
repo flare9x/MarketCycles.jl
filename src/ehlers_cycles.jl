@@ -9,7 +9,7 @@
 @doc """
 Super Smoother - Equation 3-3
 `SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}`
-""" ->
+"""
 function SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}
 a = exp(-1.414*3.14159 / n)
 b = 2 * a * cosd(1.414 * 180 / n)
@@ -27,7 +27,7 @@ end
 @doc """
 Decycler - Equation 4-1
 `Decycler(x::Array{Float64}; n::Int64=60)::Array{Float64}`
-""" ->
+"""
 function Decycler(x::Array{Float64}; n::Int64=60)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
 #Highpass filter cyclic components whose periods are shorter than “cutoff” bars
@@ -42,7 +42,7 @@ end
 @doc """
 Decycle Oscillator - Equation 4-2
 `Decycle_OSC(x::Array{Float64}; n1::Int64=30, n2::Int64=60)::Array{Float64}`
-""" ->
+"""
 function Decycle_OSC(x::Array{Float64}; n1::Int64=30, n2::Int64=60)::Array{Float64}
         @assert n2<size(x,1) && n2>0 "Argument n out of bounds."
 alpha1 = (cosd(.707*360 / n1) + sind(.707*360 / n1) - 1) / cosd(.707*360 / n1)
@@ -61,7 +61,7 @@ end
 @doc """
 Band Pass Filter - Equation 5-1
 `BandPassFilter(x::Array{Float64}; n::Int64=30, bandwidth::Float64=.3)::Array{Float64}`
-""" ->
+"""
 function BandPassFilter(x::Array{Float64}; n::Int64=30, bandwidth::Float64=.3)::Array{Float64}
             @assert n<size(x,1) && n>0 "Argument n out of bounds."
 alpha2 = (cosd(.25*bandwidth*360 / n) + sind(.25*bandwidth*360 / n) - 1) / cosd(.25*bandwidth*360 /n)
@@ -110,7 +110,7 @@ end
 @doc """
 Hurst Coefficient - Equation 6-1
 `HurstCoefficient(x::Array{Float64}; n::Int64=30,)::Array{Float64}`
-""" ->
+"""
 function HurstCoefficient(x::Array{Float64}; n::Int64=30,)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
         @assert iseven(n) "n must be an even number."
@@ -168,7 +168,7 @@ end
 @doc """
 HP LP Roofing Filter - Equation 7-1
 `HPLPRoofingFilter(x::Array{Float64}; n::Int64=30,)::Array{Float64}`
-""" ->
+"""
 function HPLPRoofingFilter(x::Array{Float64})::Array{Float64}
         @assert n<size(x,1) && n>0 "Argument n out of bounds."
 # Highpass filter cyclic components whose periods are shorter than 48 bars
@@ -194,7 +194,7 @@ end
 Zero Mean Roofing Filter - Equation 7-2
 P0 = Lag 0
 `ZeroMeanRoofingFilterP0(x::Array{Float64})::Array{Float64}`
-""" ->
+"""
 function ZeroMeanRoofingFilterP0(x::Array{Float64})::Array{Float64}
             @assert n<size(x,1) && n>0 "Argument n out of bounds."
 # Highpass filter cyclic components whose periods are shorter than 48 bars
@@ -222,7 +222,7 @@ end
 Zero Mean Roofing Filter - Equation 7-2
 P1 = Lag 1
 `ZeroMeanRoofingFilterP0(x::Array{Float64})::Array{Float64}`
-""" ->
+"""
 function ZeroMeanRoofingFilterP1(x::Array{Float64})::Array{Float64}
             @assert n<size(x,1) && n>0 "Argument n out of bounds."
 # Highpass filter cyclic components whose periods are shorter than 48 bars
@@ -249,7 +249,7 @@ end
 @doc """
 Roofing Filter As Indicator - Equation 7-3
 `RoofingFilterIndicator(x::Array{Float64}; n1::Int64=40,n2::Int64=80)::Array{Float64}`
-""" ->
+"""
 function RoofingFilterIndicator(x::Array{Float64}; n1::Int64=40,n2::Int64=80)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
     # Highpass filter cyclic components whose periods are shorter than 48 bars
@@ -276,7 +276,7 @@ end
 @doc """
 Modified Stochastic - Equation 7-4
 `ModifiedStochastic(x::Array{Float64}; n::Int64=20)::Array{Float64}`
-""" ->
+"""
 function ModifiedStochastic(x::Array{Float64}; n::Int64=20)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
 #Highpass filter cyclic components whose periods are shorter than 48 bars
@@ -312,7 +312,7 @@ end
 @doc """
 Modified RSI - Equation 7-5
 `ModifiedRSI(x::Array{Float64}; n::Int64=20)::Array{Float64}`
-""" ->
+"""
 function ModifiedRSI(x::Array{Float64}; n::Int64=10)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
 #Highpass filter cyclic components whose periods areshorter than 48 bars
@@ -372,7 +372,7 @@ end
 Autocorrelation - Equation 8-2
 Computes Matrix for all min_lag:max_lag
 `AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48)::Array{Float64}`
-""" ->
+"""
 function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
 #Highpass filter cyclic components whose periods areshorter than 48 bars
@@ -411,7 +411,7 @@ end
 Single Lag Autocorrelation - Equation 8-3
 Extract A Single Lag Autocorrelation To Use as Standalone Indicator
 `SingleLagAutoCorrelationIndicator(x::Array{Float64}; lag::Int64=10)::Array{Float64}`
-""" ->
+"""
 function SingleLagAutoCorrelationIndicator(x::Array{Float64}; lag::Int64=10)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
 #Highpass filter cyclic components whose periods areshorter than 48 bars
@@ -448,7 +448,7 @@ Autocorrelation Periodogram- Equation 8-3
 Computes Matrix for all min_lag:max_lag
     # //////////// note from normalization down did not reproduce TS results - reuires revisit - Help wanted
 `AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48)::Array{Float64}`
-""" ->
+"""
 function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48)::Array{Float64}
         @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
 alpha1 = (cosd(.707*360 / 48) + sind(.707*360 / 48) - 1) / cosd(.707*360 / 48)
@@ -564,7 +564,7 @@ Autocorrelation Reversals - Equation 8-3
 # Care should be taken when increasing the value of this input because the lag of the indicator increases in direct proportion to the increase of the value of the AvgLength.
 # Typical delay of the indicator will be about three bars when the AvgLength parameter is set to a value of 3.
 `AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}`
-""" ->
+"""
 function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
         @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
 # Highpass filter cyclic components whose periods are shorter than 48 bars
