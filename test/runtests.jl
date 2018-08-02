@@ -28,6 +28,7 @@ end
     @testset "4-1 Decycler" begin
         filename = joinpath(dirname(@__FILE__), "test_4-1_Decycler.csv")
         test = CSV.read( filename)
+        close = Float64.(test[:Close])
         decycler_benchmark = Float64.(test[:Sixty_Period_Decycler])
         decycler = Decycler(close, n=60)
         decycler = round.(decycler,2) # round same as tradestation output
