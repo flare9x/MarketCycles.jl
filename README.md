@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl)
+
 # MarketCycles
 
 This package provides digital signal processing indicators developed by John F. Ehlers.
