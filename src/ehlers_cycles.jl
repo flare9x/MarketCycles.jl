@@ -6,9 +6,10 @@
 # 9-1 onwards
 ##############################
 
-@doc """
+"""
+    SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}
+
 Super Smoother - Equation 3-3
-`SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}`
 """
 function SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}
 a = exp(-1.414*3.14159 / n)
