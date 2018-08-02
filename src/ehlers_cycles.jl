@@ -24,19 +24,20 @@ end
 return Super
 end
 
-@doc """
+"""
+    Decycler(x::Array{Float64}; n::Int64=60)::Array{Float64}
+
 Decycler - Equation 4-1
-`Decycler(x::Array{Float64}; n::Int64=60)::Array{Float64}`
 """
 function Decycler(x::Array{Float64}; n::Int64=60)::Array{Float64}
     @assert n<size(x,1) && n>0 "Argument n out of bounds."
-#Highpass filter cyclic components whose periods are shorter than “cutoff” bars
-alpha1 = ((cosd(360 / n) + sind(360 / n) - 1)) / (cosd(360 / n))
-Decycle = zeros(x)
- @inbounds for i in 2:length(x)
-     Decycle[i] = (alpha1 / 2)*(x[i] + x[i-1]) + (1- alpha1)*Decycle[i-1]
-end
-return Decycle
+    #Highpass filter cyclic components whose periods are shorter than “cutoff” bars
+    alpha1 = ((cosd(360 / n) + sind(360 / n) - 1)) / (cosd(360 / n))
+    Decycle = zeros(x)
+    @inbounds for i in 2:length(x)
+        Decycle[i] = (alpha1 / 2)*(x[i] + x[i-1]) + (1- alpha1)*Decycle[i-1]
+    end
+    return Decycle
 end
 
 @doc """
