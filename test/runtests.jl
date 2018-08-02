@@ -11,6 +11,7 @@ end
 ######################################################################
 
 # 3-3 SuperSmoother Test
+@testset "Ehlers Tests" begin
 test = CSV.read("C:/Users/Andrew.Bannerman/.julia/v0.6/MarketCycles/test/test_3-3_Supersmoother.csv")
 close = Float64.(test[:Close])
 super_smoother_benchmark = Float64.(test[:Ten_Period_Supersmoother])
@@ -27,6 +28,7 @@ decycler = Decycler(close, n=60)
 decycler = round.(decycler,2) # round same as tradestation output
 valid = ifelse.(decycler .== decycler_benchmark,1,0)
 @test sum(valid) == length(valid)
+end
 
 # 4-2 - Decycle Oscillator test
 test = CSV.read("C:/Users/Andrew.Bannerman/.julia/v0.6/MarketCycles/test/test_4-2_Decycle_Oscillator.csv")

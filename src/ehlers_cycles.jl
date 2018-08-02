@@ -626,109 +626,109 @@ end
 ##### DC portion needs to be completed correctly ###
 ## Data validation vs TS passes with exception of DC
 # 5-2. Dominant Cycle Measured by Zero Crossings of the Band-Pass Filter
-function DominantCycle(x::Array{Float64}; n::Int64=20, bandwidth::Float64=.7)::Array{Float64}
-alpha2 = (cosd(.25*bandwidth*360 / n) + sind(.25*bandwidth*360 / n) - 1) / cosd(.25*bandwidth*360 /n)
-HP = zeros(x)
-@inbounds for i = 2:length(x)
-HP[i] = (1 + alpha2 / 2)*(x[i] - x[i-1]) + (1- alpha2)*HP[i-1]
-end
-beta1 = cosd(360 / n)
-gamma1 = 1 / cosd(360*bandwidth / n)
-alpha1 = gamma1 - sqrt(gamma1*gamma1 - 1)
-BP = zeros(x)
-@inbounds for i = 3:length(x)
-    if i == 3
-        BP[i-1] = 0
-        BP[i-2] = 0
-    else
-BP[i] = .5*(1 - alpha1)*(HP[i] - HP[i-2]) + beta1*(1 + alpha1)*BP[i-1] -alpha1*BP[i-2]
-end
-end
+#function DominantCycle(x::Array{Float64}; n::Int64=20, bandwidth::Float64=.7)::Array{Float64}
+#alpha2 = (cosd(.25*bandwidth*360 / n) + sind(.25*bandwidth*360 / n) - 1) / cosd(.25*bandwidth*360 /n)
+#HP = zeros(x)
+#@inbounds for i = 2:length(x)
+#HP[i] = (1 + alpha2 / 2)*(x[i] - x[i-1]) + (1- alpha2)*HP[i-1]
+#end
+#beta1 = cosd(360 / n)
+#gamma1 = 1 / cosd(360*bandwidth / n)
+#alpha1 = gamma1 - sqrt(gamma1*gamma1 - 1)
+#BP = zeros(x)
+#@inbounds for i = 3:length(x)
+#    if i == 3
+#        BP[i-1] = 0
+#        BP[i-2] = 0
+#    else
+#BP[i] = .5*(1 - alpha1)*(HP[i] - HP[i-2]) + beta1*(1 + alpha1)*BP[i-1] -alpha1*BP[i-2]
+#end
+#end
 
-peak = 0.0
-peak_save = zero(x)
-DC = zeros(x)
-Real = zeros(x)
-@inbounds for i = 1:length(BP)
-    peak = .991*peak
-    peak_save[i] = .991*peak
-    if abs(BP[i]) > peak
-        peak = abs(BP[i])
-        peak_save[i] = peak
-    elseif peak != 0.0
-        Real[i] = BP[i] / peak
-                peak_save[i] = peak
-    end
-end
+#peak = 0.0
+#peak_save = zero(x)
+#DC = zeros(x)
+#Real = zeros(x)
+#@inbounds for i = 1:length(BP)
+#    peak = .991*peak
+#    peak_save[i] = .991*peak
+#    if abs(BP[i]) > peak
+#        peak = abs(BP[i])
+#        peak_save[i] = peak
+#    elseif peak != 0.0
+#        Real[i] = BP[i] / peak
+#                peak_save[i] = peak
+#    end
+#end
 
-DC = fill(6.0,length(x))
+#DC = fill(6.0,length(x))
         # mark all 0 crossings
-        co_cu = zeros(BP)
-@inbounds for i = 2:length(BP)
-           if (Real[i] > 0.0) && (Real[i-1] < 0.0) || (Real[i] < 0.0) && (Real[i-1] > 0.0)# cross over
-               co_cu[i] = 1.0
-           else
-               co_cu[i] = 0.0
-           end
-       end
+#        co_cu = zeros(BP)
+#@inbounds for i = 2:length(BP)
+#           if (Real[i] > 0.0) && (Real[i-1] < 0.0) || (Real[i] < 0.0) && (Real[i-1] > 0.0)# cross over
+#               co_cu[i] = 1.0
+#           else
+#               co_cu[i] = 0.0
+#           end
+#       end
 
 # Count until each cross over or cross under
-function co_cu_count(x::Array{Float64})::Array{Float64}
-    count_save = zero(x)
-    count = 0
-    for i = 2:length(x)
-    if x[i] == 1.0 && x[i-1] == 0.0
-        count = 1.0 + count
-        count_save[i] = count
-    end
-    if x[i] == 0.0 && x[i-1] == 1.0
-        count = 1.0
-        #count_save[i] = count
-    end
-    if x[i] == 0.0 && x[i-1] == 1.0
-        count = 1.0
-    elseif x[i] == 0.0
-        count = count + 1.0
-        #count_save[i] = count
-    end
-end
-    return count_save
-end
+#function co_cu_count(x::Array{Float64})::Array{Float64}
+#    count_save = zero(x)
+#    count = 0
+#    for i = 2:length(x)
+#    if x[i] == 1.0 && x[i-1] == 0.0
+#        count = 1.0 + count
+#        count_save[i] = count
+#    end
+#    if x[i] == 0.0 && x[i-1] == 1.0
+#        count = 1.0
+#        #count_save[i] = count
+#    end
+#    if x[i] == 0.0 && x[i-1] == 1.0
+#        count = 1.0
+#    elseif x[i] == 0.0
+#        count = count + 1.0
+#        #count_save[i] = count
+#    end
+#end
+#    return count_save
+#end
 
-count = co_cu_count(x)
+#count = co_cu_count(x)
 
-function locf(x::Array{Float64})
-    dx = zeros(x)
-    for i in 2:length(x)
-        if i == 2
-            # fill index 1
-            dx[i-1] = x[i-1]
-        end
-    if (x[i] == 0.0 && x[i-1] != 0.0)
-        dx[i] = x[i-1]
-    else
-        dx[i] = x[i]
-    end
-    if (x[i] == 0.0 && x[i-1] == 0.0)
+#function locf(x::Array{Float64})
+#    dx = zeros(x)
+#    for i in 2:length(x)
+#        if i == 2
+#            # fill index 1
+#            dx[i-1] = x[i-1]
+#        end
+#    if (x[i] == 0.0 && x[i-1] != 0.0)
+#        dx[i] = x[i-1]
+#    else
+#        dx[i] = x[i]
+#    end
+#    if (x[i] == 0.0 && x[i-1] == 0.0)
                 dx[i] = dx[i-1]
-    end
-end
-    return dx
-end
+#    end
+#end
+#    return dx
+#end
 
 # run na locf function
-count = locf(count)
-i=67400 - 13
-count = co_cu_count(co_cu)
-DC .= 2 .* count
-DC = fill(6.0,length(x))
-@inbounds for i = 2:length(count)
-    DC[i] = 2*count[i]
-    if (2*count[i]) > (1.25*DC[i-1])
-        DC[i] = 1.25*DC[i-1]
-    elseif (2*count[i]) < (.8*DC[i-1])
-         DC[i] = .8*DC[i-1]
-     end
- end
-        return DC
-    end
+#count = locf(count)
+#i=67400 - 13
+#count = co_cu_count(co_cu)
+#DC .= 2 .* count
+#DC = fill(6.0,length(x))
+#@inbounds for i = 2:length(count)
+#    DC[i] = 2*count[i]
+#    if (2*count[i]) > (1.25*DC[i-1])
+#        DC[i] = 1.25*DC[i-1]
+#    elseif (2*count[i]) < (.8*DC[i-1])
+#         DC[i] = .8*DC[i-1]
+#     end
+ #end
+#        return DC
+#    end
