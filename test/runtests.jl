@@ -30,6 +30,7 @@ decycler = Decycler(close, n=60)
 decycler = round.(decycler,2) # round same as tradestation output
 valid = ifelse.(decycler .== decycler_benchmark,1,0)
 @test sum(valid) == length(valid)
+end
 
 # 4-2 - Decycle Oscillator test
 filename = joinpath(dirname(@__FILE__), "test_4-2_Decycle_Oscillator.csv")
@@ -39,5 +40,4 @@ decycler_osc = Decycle_OSC(close, n1=30,n2=60)
 decycler_osc = round.(decycler,2) # round same as tradestation output
 valid = ifelse.(decycler_osc .== decycler_osc_benchmark,1,0)
 valid
-@test sum(valid) == length(valid)
-end
+#@test sum(valid) == length(valid)
