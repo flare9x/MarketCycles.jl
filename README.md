@@ -46,7 +46,7 @@ Outside contributions are welcome!
  
 ## Usage
    ```julia
-Pkg.add("MarketCycles.jl")
+Pkg.clone("https://github.com/flare9x/MarketCycles.jl")
 ``` 
 
 Each indicator function requires an input of a single dimension array of Float64 type. Each indicator function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific indicator function: 
