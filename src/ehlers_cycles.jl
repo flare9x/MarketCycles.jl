@@ -710,7 +710,7 @@ end
 #        dx[i] = x[i]
 #    end
 #    if (x[i] == 0.0 && x[i-1] == 0.0)
-                dx[i] = dx[i-1]
+#                dx[i] = dx[i-1]
 #    end
 #end
 #    return dx
