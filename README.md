@@ -1,5 +1,9 @@
 [![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl)
 
+[![Coverage Status](https://coveralls.io/repos/flare9x/MarketCycles.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/flare9x/MarketCycles.jl?branch=master)
+
+[![codecov.io](http://codecov.io/github/flare9x/MarketCycles.jl/coverage.svg?branch=master)](http://codecov.io/github/flare9x/MarketCycles.jl?branch=master)
+
 # MarketCycles
 
 This package provides digital signal processing indicators developed by John F. Ehlers.
