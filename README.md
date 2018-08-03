@@ -106,6 +106,7 @@ for i = 1:n
 	end
 end
 
+
 # Apply autocorrelation reversals function
 auto_cor_reversals = AutoCorrelationReversals(cl,min_lag=1,max_lag=48,LPLength=10,HPLength=48,AvgLength=3)
 
