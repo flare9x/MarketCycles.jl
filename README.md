@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl)
+[![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl) [![Coverage Status](https://coveralls.io/repos/flare9x/MarketCycles.jl/badge.svg?branch=master&service=github)](https://coveralls.io/github/flare9x/MarketCycles.jl?branch=master) [![codecov.io](http://codecov.io/github/flare9x/MarketCycles.jl/coverage.svg?branch=master)](http://codecov.io/github/flare9x/MarketCycles.jl?branch=master)
 
 # MarketCycles
 
@@ -99,12 +99,13 @@ lo = op - rand(n)
 cl = 100.0 + cumsum(randn(n))
 index = collect(1:1:length(cl))
 for i = 1:n
-	if cl[i] > hi[i]
-		cl[i] = hi[i]
-	elseif cl[i] < lo[i]
-		cl[i] = lo[i]
-	end
+    if cl[i] > hi[i]
+        cl[i] = hi[i]
+    elseif cl[i] < lo[i]
+        cl[i] = lo[i]
+    end
 end
+
 
 # Apply autocorrelation reversals function
 auto_cor_reversals = AutoCorrelationReversals(cl,min_lag=1,max_lag=48,LPLength=10,HPLength=48,AvgLength=3)
