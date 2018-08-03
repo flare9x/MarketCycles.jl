@@ -4,7 +4,7 @@ module MarketCycles
 
 export
     SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
-    ZeroMeanRoofingFilterP0, ZeroMeanRoofingFilterP1, RoofingFilterIndicator,
+    ZeroMeanRoofingFilterK0, ZeroMeanRoofingFilterK1, RoofingFilterIndicator,
     ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, AutoCorrelationPeriodogram,
     AutoCorrelationReversals
 
