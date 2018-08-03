@@ -88,7 +88,7 @@ function BandPassFilter(x::Array{Float64}; n::Int64=30, bandwidth::Float64=.3)::
             if Peak[i] != 0
                 Signal[i] = BP[i] / Peak[i]
             end
-            else
+        else
             Signal[i] = BP[i] / Peak[i]
         end
     end
