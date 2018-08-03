@@ -4,9 +4,9 @@
 
 This package provides digital signal processing indicators developed by John F. Ehlers.
 
-Currently the original indicators shared in his book: Cycle Analytics for Traders, Advanced Technical Trading Concepts are provided with intent to explore the DSP space and provide new intuitions based on the Ehlers framework. 
+Currently the original indicators shared in his book: Cycle Analytics for Traders, Advanced Technical Trading Concepts are provided with intent to explore the DSP space and provide new intuitions based on the Ehlers framework.
 
-Outside contributions are welcome! 
+Outside contributions are welcome!
 
 ## Available Indicators
 
@@ -15,26 +15,26 @@ Outside contributions are welcome!
     *   Decycler
     *   Decycler Oscillator
     *   Band Pass Filter
-    *   Hurst Coefficient 
-    *   HP-LP Roofing Filter 
-    *   Zero Mean Roofing Filter 
-    *   Roofing Filter 
-    *   Modified Stochastic 
-    *   Modified RSI 
-    *   Autocorrelation (Multiple Lag Matrix) 
-    *   Autocorrelation (Single Lag) 
-    *   Autocorrelation Periodogram 
-    *   Autocorrelation Reversals 
-    
+    *   Hurst Coefficient
+    *   HP-LP Roofing Filter
+    *   Zero Mean Roofing Filter
+    *   Roofing Filter
+    *   Modified Stochastic
+    *   Modified RSI
+    *   Autocorrelation (Multiple Lag Matrix)
+    *   Autocorrelation (Single Lag)
+    *   Autocorrelation Periodogram  
+    *   Autocorrelation Reversals
+
 *   TO DO
     *   Dominant Cycle
     *   DFT Spectral Estimate
     *   Comb Filter Spectral Estimate
     *   Adaptive RSI
     *   Adaptive Stochastic Indicator
-    *   Adaptive CCI 
-    *   Adaptive Band Pass Filter 
-    *   Even Better SineWave Indicator 
+    *   Adaptive CCI
+    *   Adaptive Band Pass Filter
+    *   Even Better SineWave Indicator
     *   Compute and Display Convolution
     *   Classic Hilbert Transformer
     *   Hilbert Transformer Indicator
@@ -44,14 +44,14 @@ Outside contributions are welcome!
     *   Fisher Transform to the Adaptive RSI Indicator
     *   SwamiCharts RSI
     *   SwamiCharts Stochastic
-    
- 
+
+
 ## Usage
    ```julia
 Pkg.clone("https://github.com/flare9x/MarketCycles.jl")
-``` 
+```
 
-Each indicator function requires an input of a single dimension array of Float64 type. Each indicator function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific indicator function: 
+Each indicator function requires an input of a single dimension array of Float64 type. Each indicator function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific indicator function:
 
    ```julia
 julia> @doc AutoCorrelationReversals
@@ -79,12 +79,12 @@ julia> @doc AutoCorrelationReversals
   AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,
   LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
 ```
-Call the function as below for lags 1 to 48: 
+Call the function as below for lags 1 to 48:
 
  ```julia
 AutoCorrelationReversals(your_data,min_lag=1,max_lag=48,LPLength=10,HPLength=48,AvgLength=3)
  ```
-We may see what this looks like over dummy data: 
+We may see what this looks like over dummy data:
 
    ```julia
 using MarketCycles
@@ -124,17 +124,17 @@ out = vstack(p1,p2)
 draw(PNG("C:/Users/Andrew.Bannerman/Desktop/Julia/auto_correlation_reversals.png", 1500px, 800px), out)
 ```
 
-For the output: 
+For the output:
 
 ![John Ehlers Autocorrelation Reversals](https://github.com/flare9x/MarketCycles.jl/blob/master/examples/auto_correlation_reversals_readme.png)
 
 One may line up the reversals to the turning points within the data!
 
-## Available Function Names 
+## Available Function Names
 ```julia
     SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
     ZeroMeanRoofingFilterK0, ZeroMeanRoofingFilterK1, RoofingFilterIndicator,
-    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, 
+    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator,
     AutoCorrelationPeriodogram, AutoCorrelationReversals
 ```
 Feel free to explore any of the functions with:
@@ -142,5 +142,3 @@ Feel free to explore any of the functions with:
 ```julia
 @doc SuperSmoother
 ```
-
-
