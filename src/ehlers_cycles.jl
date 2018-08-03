@@ -113,7 +113,7 @@ function BandPassFilter(x::Array{Float64}; n::Int64=30, bandwidth::Float64=.3)::
 end
 
 """
-    urstCoefficient(x::Array{Float64}; n::Int64=30, Smooth::Int64=20)::Array{Float64}
+    HurstCoefficient(x::Array{Float64}; n::Int64=30, Smooth::Int64=20)::Array{Float64}
 
 Hurst Coefficient - Equation 6-1
 """
