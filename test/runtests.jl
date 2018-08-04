@@ -9,7 +9,7 @@ end
 
 ######################################################################
 # Validate against John Ehlers Original TradeStation Easylanguage code
-# Run against dummy data loaded in Tradestation 
+# Run against dummy data loaded in Tradestation
 ######################################################################
 
 # Note - for some tests irratic results for the lead in period #
@@ -45,7 +45,7 @@ end
         test = CSV.read( filename)
         dat = Float64.(test[:x])
         decycler_osc_benchmark = Float64.(test[:thirty_sixty_decycle_osc])
-        decycler_osc = Decycle_OSC(dat, n1=30,n2=60)
+        decycler_osc = Decycle_OSC(dat, LPPeriod=30,HPPeriod=60)
         decycler_osc = round.(decycler_osc,2) # round same as tradestation output
         valid = ifelse.(decycler_osc .== decycler_osc_benchmark,1,0)
         @test sum(valid) == length(valid)-148 # minus lead in
@@ -108,7 +108,7 @@ end
 
     @testset "Roofing Filter Indicator Equation 7-3" begin
         filename = joinpath(dirname(@__FILE__), "test_7-3_Roofing_Filter_Indicator.csv")
-        test = CSV.read( filename)
+        test = CSV.read(filename)
         dat = Float64.(test[:x])
         Roofing_Filter_Indicator_benchmark = Float64.(test[:Filt])
         Roofing_Filter_Indicator = RoofingFilterIndicator(dat)
@@ -116,5 +116,72 @@ end
         valid = ifelse.(Roofing_Filter_Indicator .== Roofing_Filter_Indicator_benchmark,1,0)
         @test sum(valid) == length(valid)-213 # 213 bar lead in period
     end
+
+    @testset "Modified Stochastic - Equation 7-4" begin
+        filename = joinpath(dirname(@__FILE__), "test_7-4_Modified_Stochastic.csv")
+        test = CSV.read(filename)
+        dat = Float64.(test[:x])
+        Modified_stochastic_benchmark = Float64.(test[:Modified_stochasitc])
+        Modified_stochastic = ModifiedStochastic(dat,n=20)
+        Modified_stochastic = round.(Modified_stochastic,2) # round same as tradestation output
+        valid = ifelse.(Modified_stochastic .== Modified_stochastic_benchmark,1,0)
+        @test sum(valid) == length(valid)-72 # 72 bar lead in period
+    end
+
+    @testset "Modified RSI - Equation 7-5" begin
+        filename = joinpath(dirname(@__FILE__), "test_7-5_Modified_RSI.csv")
+        test = CSV.read(filename)
+        dat = Float64.(test[:x])
+        Modified_RSI_benchmark = Float64.(test[:mod_rsi])
+        Modified_RSI = ModifiedRSI(dat,n=10)
+        Modified_RSI = round.(Modified_RSI,2) # round same as tradestation output
+        valid = ifelse.(Modified_RSI .== Modified_RSI_benchmark,1,0)
+        @test sum(valid) == length(valid)-96 # 96 bar lead in period
+    end
+
+    @testset "Autocorrelation Indicator - Equation 8-2" begin
+        filename = joinpath(dirname(@__FILE__), "test_8-3_Autocorrelation_Indicator.csv")
+        test = CSV.read(filename)
+        dat = Float64.(test[:x])
+        Autocor_p48_benchmark = Float64.(test[:cor_48])
+        Autocor_p10_benchmark = Float64.(test[:cor_10])
+        Autocor_ind_out = AutoCorrelationIndicator(dat)
+        autocorr_p48 = Autocor_ind_out[:,48]
+        autocorr_p10 = Autocor_ind_out[:,10]
+        autocorr_p48 = round.(autocorr_p48,4) # round same as tradestation output
+        autocorr_p10 = round.(autocorr_p10,4) # round same as tradestation output
+        valid = ifelse.(autocorr_p10 .== Autocor_p10_benchmark,1,0)
+        @test sum(valid) == length(valid)-124  # 124 bar lead in period
+        valid = ifelse.(autocorr_p48 .== Autocor_p48_benchmark,1,0)
+        @test sum(valid) == length(valid)-185  # 185 bar lead in period
+    end
+
+    @testset "Single Lag Autocorrelation - Equation 8-3" begin
+        filename = joinpath(dirname(@__FILE__), "test_8-3_Autocorrelation_Indicator.csv")
+        test = CSV.read(filename)
+        dat = Float64.(test[:x])
+        Autocor_p10_benchmark = Float64.(test[:cor_10])
+        Autocor_ind_out = AutoCorrelationIndicator(dat)
+        autocorr_p10 = Autocor_ind_out[:,10]
+        autocorr_p10 = round.(autocorr_p10,4) # round same as tradestation output
+        valid = ifelse.(autocorr_p10 .== Autocor_p10_benchmark,1,0)
+        @test sum(valid) == length(valid)-124  # 124 bar lead in period
+    end
+
+    # to do - fix MaxPwr calculation for Autocorrelation Peeriodogram 8-3
+
+    @testset "Autocorrelation Reversals - Equation 8-4" begin
+        filename = joinpath(dirname(@__FILE__), "test_8-4_Autocorrelation_Reversals.csv")
+        test = CSV.read(filename)
+        dat = Float64.(test[:x])
+        Autocor_reversals_benchmark = Float64.(test[:autocor_reversal])
+        Autocor_reversals_out = AutoCorrelationReversals(dat)
+        valid = ifelse.(Autocor_reversals_out .== Autocor_reversals_benchmark,1,0)
+        @test sum(valid) == length(valid)-110  # 110 bar lead in period
+    end
+
+    # TO DO- fix MaxPwr calculation for DFT Spectral Estimate
+
+    # TO DO -  Complete Comb Filter Spectral Estimate - Equation 10-1
 
 end
