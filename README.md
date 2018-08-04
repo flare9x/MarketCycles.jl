@@ -135,8 +135,8 @@ One may line up the reversals to the turning points within the data!
 ```julia
     SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
     ZeroMeanRoofingFilterK0, ZeroMeanRoofingFilterK1, RoofingFilterIndicator,
-    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator,
-    AutoCorrelationPeriodogram, AutoCorrelationReversals
+    ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, AutoCorrelationPeriodogram,
+    AutoCorrelationReversals, DFT, AdaptiveRSI, AdaptiveStochastic
 ```
 Feel free to explore any of the functions with:
 
