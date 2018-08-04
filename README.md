@@ -23,15 +23,15 @@ Outside contributions are welcome!
     *   Modified RSI
     *   Autocorrelation (Multiple Lag Matrix)
     *   Autocorrelation (Single Lag)
-    *   Autocorrelation Periodogram  
+    *   Autocorrelation Periodogram
     *   Autocorrelation Reversals
-
-*   TO DO
-    *   Dominant Cycle
-    *   DFT Spectral Estimate
-    *   Comb Filter Spectral Estimate
     *   Adaptive RSI
     *   Adaptive Stochastic Indicator
+
+*   TO DO
+    *   Dominant Cycle - Fix DC Portion
+    *   DFT Spectral Estimate - Fix MaxPwr Calculation 
+    *   Comb Filter Spectral Estimate
     *   Adaptive CCI
     *   Adaptive Band Pass Filter
     *   Even Better SineWave Indicator
