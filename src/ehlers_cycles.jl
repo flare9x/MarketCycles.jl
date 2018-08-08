@@ -671,7 +671,7 @@ function DFT(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{F
     end
     # Find Maximum Power Level for Normalization
     # Note difers from TS output
-    MaxPwr = Array{Float64}(length(x),max_lag)
+    MaxPwr = Array{Float64}(length(x),HPLength)
     @inbounds for j = 8:48
     @inbounds for i = 2:size(x,1)
     MaxPwr[i,j]  = .995*MaxPwr[i-1,j]
