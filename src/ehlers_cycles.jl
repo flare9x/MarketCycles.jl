@@ -6,6 +6,8 @@
 # 9-1 onwards
 ##############################
 
+using Missings
+
 """
     SuperSmoother(x::Array{Float64}; n::Int64=10)::Array{Float64}
 
@@ -760,7 +762,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     sinePart = Array{Float64}(length(x),max_lag)
     sqSum = Array{Float64}(length(x),max_lag)
     @inbounds for j = min_lag:max_lag
-        @inbounds for k = 3:48
+        @inbounds for k = 3:max_lag
             cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
             sinePart[:,j] .= sinePart[:,j] .+ Avg_Corr_Out[:,k] .* sind(370 * k / j)
             sqSum[:,j] .= cosinePart[:,j].^2 .+ sinePart[:,j].^2
@@ -808,7 +810,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
-    for j = 10:48
+    for j = 5:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
@@ -818,11 +820,11 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         if Sp[i] != 0
             DominantCycle[i] = Spx[i] / Sp[i]
         end
-    if DominantCycle[i] < 10
-        DominantCycle[i] = 10
+    if DominantCycle[i] < 5
+        DominantCycle[i] = 5
     end
-    if DominantCycle[i] > 48
-        DominantCycle[i] = 48
+    if DominantCycle[i] > max_lag
+        DominantCycle[i] = max_lag
     end
     end
 
@@ -850,6 +852,13 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         rsi= zeros(x)
         # Set width of look back 50% of the dominant cycle
         n = round.(DominantCycle ./ 2)
+        for i = 1:size(n,1)
+        if isnan(n[i]) == 1
+            n[i] = 2.0
+        else
+            n[i] == n[i]
+        end
+    end
         n = Int64.(n)
         i=1
         @inbounds for i = n[1]:size(x,1)
@@ -911,7 +920,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     sinePart = Array{Float64}(length(x),max_lag)
     sqSum = Array{Float64}(length(x),max_lag)
     @inbounds for j = min_lag:max_lag
-        @inbounds for k = 3:48
+        @inbounds for k = 3:max_lag
             cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
             sinePart[:,j] .= sinePart[:,j] .+ Avg_Corr_Out[:,k] .* sind(370 * k / j)
             sqSum[:,j] .= cosinePart[:,j].^2 .+ sinePart[:,j].^2
@@ -972,8 +981,8 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     if DominantCycle[i] < 10
         DominantCycle[i] = 10
     end
-    if DominantCycle[i] > 48
-        DominantCycle[i] = 48
+    if DominantCycle[i] > max_lag
+        DominantCycle[i] = max_lag
     end
     end
     # Stochastic Computation starts here
