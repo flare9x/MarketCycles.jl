@@ -635,7 +635,7 @@ function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::
 end
 
 @doc """
-DFTTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
+DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
 
 Discrete Fourier Transform Sprectral Estimate - Equation 9-1
 """
