@@ -48,7 +48,7 @@ Outside contributions are welcome!
 
 ## Usage
    ```julia
-Pkg.clone("https://github.com/flare9x/MarketCycles.jl")
+add https://github.com/flare9x/MarketCycles.jl
 ```
 
 Each indicator function requires an input of a single dimension array of Float64 type. Each indicator function has its own set of arguments which change the level of some parameter. This may be the length of a look back period, the high or low pass periods or bandwidth value. For example we may call ```@doc function_name``` to see the associated documentation for the specific indicator function:
@@ -136,7 +136,7 @@ One may line up the reversals to the turning points within the data!
     SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
     ZeroMeanRoofingFilterK0, ZeroMeanRoofingFilterK1, RoofingFilterIndicator,
     ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, AutoCorrelationPeriodogram,
-    AutoCorrelationReversals, DFT, AdaptiveRSI, AdaptiveStochastic
+    AutoCorrelationReversals, DFTS, AdaptiveRSI, AdaptiveStochastic
 ```
 Feel free to explore any of the functions with:
 
