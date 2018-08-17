@@ -129,7 +129,6 @@ For the output:
 
 ![John Ehlers Autocorrelation Reversals](https://github.com/flare9x/MarketCycles.jl/blob/master/examples/auto_correlation_reversals_readme.png)
 
-One may line up the reversals to the turning points within the data!
 
 ## Available Function Names
 ```julia
