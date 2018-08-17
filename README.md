@@ -48,6 +48,7 @@ Outside contributions are welcome!
 
 ## Usage
    ```julia
+   ]
 add https://github.com/flare9x/MarketCycles.jl
 ```
 
