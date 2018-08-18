@@ -498,9 +498,9 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag
             end
         end
         # Calcualte sine and cosine part
-        cosinePart = Array{Float64}(length(x),max_lag)
-        sinePart = Array{Float64}(length(x),max_lag)
-        sqSum = Array{Float64}(length(x),max_lag)
+        cosinePart = zeros(size(x,1), max_lag)
+        sinePart = zeros(size(x,1), max_lag)
+        sqSum = zeros(size(x,1), max_lag)
         @inbounds for j = min_lag:max_lag
             for k = 3:48
                 cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
@@ -509,7 +509,7 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag
             end
         end
         # Iterate over every i in j and smooth R by the .2 and .8 factors
-        R = Array{Float64}(length(x),max_lag)
+        R = zeros(size(x,1), max_lag)
         @inbounds for j = min_lag:max_lag
             @inbounds for i = 2:size(x,1)
                 R[i,j] = (.2*sqSum[i,j]) * (sqSum[i,j]) + (.8 *R[i-1,j])
@@ -520,7 +520,7 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag
 
     # Find Maximum Power Level for Normalization
     # need to validate this and below!
-    MaxPwr = Array{Float64}(length(x),max_lag)
+    MaxPwr = zeros(size(x,1), max_lag)
     #MaxPwr = 0
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 2:size(x,1)
@@ -531,7 +531,7 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag
         end
     end
 
-    Pwr = Array{Float64}(length(x),max_lag)
+    Pwr = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 1:size(x,1)
             Pwr[i,j] = R[i,j] / MaxPwr[i,j]
@@ -673,7 +673,7 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
     end
     # Find Maximum Power Level for Normalization
     # Note difers from TS output
-    MaxPwr = Array{Float64}(length(x),HPLength)
+    MaxPwr = zeros(size(x,1), max_lag)
     @inbounds for j = 8:48
     @inbounds for i = 2:size(x,1)
     MaxPwr[i,j]  = .995*MaxPwr[i-1,j]
@@ -721,13 +721,14 @@ For example of how the indicator adjustments are made see Adaptive Indicators in
 """
 =#
 @doc """
-    'AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
+    AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
 
 Adaptive RSI - Equation 11-1
 Adjust the RSI by a lookback period half the length of the dominant cycle
 """
 function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
-    @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
+    @assert max_lag<size(x,1) && max_lag>0 "Argument max_lag is out of bounds."
+    #@assert max_lag<size(x,1) && max_lag>0 "Argument n is out of bounds."
     alpha1 = (cosd(.707*360 / HPLength) + sind(.707*360 / HPLength) - 1) / cosd(.707*360 / HPLength)
     HP = zeros(size(x,1))
     @inbounds for i = 3:size(x,1)
@@ -758,9 +759,9 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     end
 
     # Calcualte sine and cosine part
-    cosinePart = Array{Float64}(length(x),max_lag)
-    sinePart = Array{Float64}(length(x),max_lag)
-    sqSum = Array{Float64}(length(x),max_lag)
+    cosinePart = zeros(size(x,1), max_lag)
+    sinePart = zeros(size(x,1), max_lag)
+    sqSum = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for k = 3:max_lag
             cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
@@ -770,7 +771,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     end
 
     # Iterate over every i in j and smooth R by the .2 and .8 factors
-    R = Array{Float64}(length(x),max_lag)
+    R = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 2:size(x,1)
             R[i,j] = (.2*sqSum[i,j]) * (sqSum[i,j]) + (.8 *R[i-1,j])
@@ -779,7 +780,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     #### validated ^^^^^ ###############
     # Find Maximum Power Level for Normalization
     # need to validate this and below!
-    MaxPwr = Array{Float64}(length(x),max_lag)
+    MaxPwr = zeros(size(x,1), max_lag)
     #MaxPwr = 0
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 2:size(x,1)
@@ -789,7 +790,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
             end
         end
     end
-    Pwr = Array{Float64}(length(x),max_lag)
+    Pwr = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 1:size(x,1)
             Pwr[i,j] = R[i,j] / MaxPwr[i,j]
@@ -917,9 +918,9 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     end
 
     # Calcualte sine and cosine part
-    cosinePart = Array{Float64}(length(x),max_lag)
-    sinePart = Array{Float64}(length(x),max_lag)
-    sqSum = Array{Float64}(length(x),max_lag)
+    cosinePart = zeros(size(x,1), max_lag)
+    sinePart = zeros(size(x,1), max_lag)
+    sqSum = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for k = 3:max_lag
             cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
@@ -929,7 +930,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     end
 
     # Iterate over every i in j and smooth R by the .2 and .8 factors
-    R = Array{Float64}(length(x),max_lag)
+    R = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 2:size(x,1)
             R[i,j] = (.2*sqSum[i,j]) * (sqSum[i,j]) + (.8 *R[i-1,j])
@@ -938,7 +939,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     #### validated ^^^^^ ###############
     # Find Maximum Power Level for Normalization
     # need to validate this and below!
-    MaxPwr = Array{Float64}(length(x),max_lag)
+    MaxPwr = zeros(size(x,1), max_lag)
     #MaxPwr = 0
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 2:size(x,1)
@@ -948,7 +949,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
             end
         end
     end
-    Pwr = Array{Float64}(length(x),max_lag)
+    Pwr = zeros(size(x,1), max_lag)
     @inbounds for j = min_lag:max_lag
         @inbounds for i = 1:size(x,1)
             Pwr[i,j] = R[i,j] / MaxPwr[i,j]
