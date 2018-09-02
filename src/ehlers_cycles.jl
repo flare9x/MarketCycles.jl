@@ -1004,7 +1004,74 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     return AdaptiveStochastic
 end
 
+@doc """
+    PFish(h::Array{Float64}, l::Array{Float64}; n::Int64=10)::Array{Float64}
 
+- Fisher Transform - Equation 15-2 (Variation of)
+- Price Normalization
+- n = length of normalization period
+"""
+function PFish(h::Array{Float64}, l::Array{Float64}; n::Int64=10)::Array{Float64}
+    @assert n<size(x,1) && n>0 "Argument n out of bounds."
+    # Fisher Transform Calculation
+    price_input = zeros(size(h,1))
+    price_input .= (h .+ l) ./ 2
+    MaxH = zeros(size(price_input,1))
+    MinL = zeros(size(price_input,1))
+    @inbounds for i =n:size(price_input,1)
+    MaxH[i] =  maximum(price_input[i-n+1:i])
+    MinL[i] = minimum(price_input[i-n+1:i])
+    end
+    Value1 = zeros(size(price_input,1))
+    Fish_out = zeros(size(price_input,1))
+    @inbounds for i = n:size(price_input,1)
+        Value1[i] = .33*2*((price_input[i] - MinL[i])/(MaxH[i] - MinL[i]) - .5) + .67*Value1[i-1]
+        if Value1[i] > .99
+            Value1[i] = .999
+        else
+            Value1[i] = Value1[i]
+        end
+        if Value1[i] < -.99
+            Value1[i] = -.999
+        else
+            Value1[i] = Value1[i]
+        end
+        Fish_out[i] = .5*log((1 + Value1[i])/(1 - Value1[i])) + .5*Fish_out[i-1]
+    end
+        return Fish_out
+end
+
+
+#=
+@doc """
+    Fish(x::Array{Float64})::Array{Float64}
+
+- Fisher Transform - Equation 15-2
+"""
+function Fish(x::Array{Float64})::Array{Float64}
+    # Fisher Transform Calculation
+    Fish_out = zeros(size(x,1))
+    Translated = zeros(size(x,1))
+    Amplified = zeros(size(x,1))
+    Translated .= 2 .*(x .- .5);
+    Amplified .= 1.5.*Translated
+    @inbounds for i = 1:size(x,1)
+        if x[i] != NaN
+        Fish_out[i] = .5*log(abs(((1 + Amplified[i])/(1 - Amplified[i])))) # + .5*Fish[i-1]
+    elseif x[i] == NaN
+        Fish_out[i] = 0.0
+    end
+        if Fish_out[i] > .999
+            Fish_out[i] = .999
+        end
+        if Fish_out[i] < -.999
+            Fish_out[i] = -.999
+        end
+    end
+    return Fish_out
+end
+
+#=
 # Help Wanted
 ##### DC portion needs to be completed correctly ###
 ## Data validation vs TS passes with exception of DC
@@ -1115,3 +1182,81 @@ end
  #end
 #        return DC
 #    end
+
+#=
+
+@doc """
+
+Reverse EMA
+
+"""
+Inputs:
+	AA( numericsimple ) ;
+Vars:
+	CC( 0 ),EMA( 0 ),RE1( 0 ),RE2( 0 ),
+	RE3( 0 ),RE4( 0 ),RE5( 0 ),RE6( 0 ),
+	RE7( 0 ),RE8( 0 ),Wave( 0 ) ;
+
+//Classic EMA
+CC = 1 - AA ;
+EMA = AA * Close + CC * EMA[1] ;
+
+//Compute Reverse EMA
+# obtain the power TS code
+RE1 = CC * EMA + EMA[1] ;
+RE2 = Power( CC, 2 ) * RE1 + RE1[1] ;
+RE3 = Power( CC, 4 ) * RE2 + RE2[1] ;
+RE4 = Power( CC, 8 ) * RE3 + RE3[1] ;
+RE5 = Power( CC, 16 ) * RE4 + RE4[1] ;
+RE6 = Power( CC, 32 ) * RE5 + RE5[1] ;
+RE7 = Power( CC, 64 ) * RE6 + RE6[1] ;
+RE8 = Power( CC, 128 ) * RE7 + RE7[1] ;
+//Indicator as difference
+Wave = EMA - AA * RE8 ;
+
+_ReverseEMA = Wave ;
+
+
+Indicator: ReverseEMA
+
+{
+Reverse EMA Indicator
+(C) 2017 John F. Ehlers
+TASC Sep 2017
+}
+
+inputs:
+	Trend( .05 ),
+	Cycle( .3 ) ;
+variables:
+	CycleRevEMA( 0 ),
+	TrendRevEMA( 0 ),
+	AvgTrend( 0 ) ;
+
+TrendRevEMA = _ReverseEMA( Trend ) ;
+CycleRevEMA = _ReverseEMA( Cycle ) ;
+
+AvgTrend = Average( TrendRevEMA, 10 ) ;
+
+
+Plot1( TrendRevEMA, "Trend", Green ) ;
+Plot2( CycleRevEMA, "Cycle", Red ) ;
+Plot3( 0, "ZL", Blue ) ;
+
+
+alpha:= 0.1;
+ca:= 1-alpha;
+ma:= (alpha * C) + (ca*PREV);
+re1:= ca*ma + Ref(ma, -1);
+re2:= Power(ca,2)*re1 + Ref(re1,-1);
+re3:= Power(ca,4)*re2 + Ref(re2,-1);
+re4:= Power(ca,8)*re3 + Ref(re3,-1);
+re5:= Power(ca,16)*re4 + Ref(re4,-1);
+re6:= Power(ca,32)*re5 + Ref(re5,-1);
+re7:= Power(ca,64)*re6 + Ref(re6,-1);
+re8:= Power(ca,128)*re7 + Ref(re7,-1);
+ma - (alpha*re8);
+0
+—Wil
+
+=#
