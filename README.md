@@ -27,6 +27,7 @@ Outside contributions are welcome!
     *   Autocorrelation Reversals
     *   Adaptive RSI
     *   Adaptive Stochastic Indicator
+    *   Fisher Transform (Price)
 
 *   TO DO
     *   Dominant Cycle - Fix DC Portion
