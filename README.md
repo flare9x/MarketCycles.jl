@@ -6,8 +6,6 @@ This package provides digital signal processing indicators developed by John F. 
 
 Currently the original indicators shared in his book: Cycle Analytics for Traders, Advanced Technical Trading Concepts are provided with intent to explore the DSP space and provide new intuitions based on the Ehlers framework.
 
-Outside contributions are welcome!
-
 ## Available Indicators
 
 *   Available Indicators
