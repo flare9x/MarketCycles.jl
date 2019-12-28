@@ -673,7 +673,7 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
     end
     # Find Maximum Power Level for Normalization
     # Note difers from TS output
-    MaxPwr = zeros(size(x,1), max_lag)
+    MaxPwr = zeros(size(x,1), 48)
     @inbounds for j = 8:48
     @inbounds for i = 2:size(x,1)
     MaxPwr[i,j]  = .995*MaxPwr[i-1,j]
@@ -816,16 +816,16 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
 
-    DominantCycle = zeros(size(x,1))
+    dominant_cycle = zeros(size(x,1))
     for i = 1:size(x,1)
         if Sp[i] != 0
-            DominantCycle[i] = Spx[i] / Sp[i]
+            dominant_cycle[i] = Spx[i] / Sp[i]
         end
-    if DominantCycle[i] < 5
-        DominantCycle[i] = 5
+    if dominant_cycle[i] < 5
+        dominant_cycle[i] = 5
     end
-    if DominantCycle[i] > max_lag
-        DominantCycle[i] = max_lag
+    if dominant_cycle[i] > max_lag
+        dominant_cycle[i] = max_lag
     end
     end
 
@@ -852,7 +852,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         denom = zeros(size(x,1))
         rsi= zeros(size(x,1))
         # Set width of look back 50% of the dominant cycle
-        n = round.(DominantCycle ./ 2;digits = 0)
+        n = Int64.(round.(dominant_cycle ./ 2;digits = 0))
         for i = 1:size(n,1)
         if isnan(n[i]) == 1
             n[i] = 2.0
@@ -860,8 +860,6 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
             n[i] == n[i]
         end
     end
-        n = Int64.(n)
-        i=1
         @inbounds for i = n[1]:size(x,1)
             k = n[i]
             posSum[i] = sum(posDiff[i-k+1:i])
@@ -887,6 +885,12 @@ Adjust the stochastic lookback period by the same value as the dominant cycle
 """
 
 function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
+    x = dat
+    HPLength=48
+    AvgLength=3
+    LPLength=10
+    min_lag=1
+    max_lag=48
     @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
     alpha1 = (cosd(.707*360 / HPLength) + sind(.707*360 / HPLength) - 1) / cosd(.707*360 / HPLength)
     HP = zeros(size(x,1))
@@ -963,8 +967,8 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
         Pwr[i,j] = 0.0
     else
         Pwr[i,j] = Pwr[i,j]
-    end
-    end
+            end
+        end
     end
 
     # Compute the dominant cycle using the CG of the spectrum
@@ -975,16 +979,16 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
 
-    DominantCycle = zeros(size(x,1))
+    dominant_cycle = zeros(size(x,1))
     for i = 1:size(x,1)
         if Sp[i] != 0
-            DominantCycle[i] = Spx[i] / Sp[i]
+            dominant_cycle[i] = Spx[i] / Sp[i]
         end
-    if DominantCycle[i] < 10
-        DominantCycle[i] = 10
+    if dominant_cycle[i] < 10
+        dominant_cycle[i] = 10
     end
-    if DominantCycle[i] > max_lag
-        DominantCycle[i] = max_lag
+    if dominant_cycle[i] > max_lag
+        dominant_cycle[i] = max_lag
     end
     end
     # Stochastic Computation starts here
@@ -992,16 +996,16 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     HighestC = zeros(size(x,1))
     LowestC = zeros(size(x,1))
     Stoc = zeros(size(x,1))
-    AdaptiveStochastic = zeros(size(x,1))
-    n = Int64.(round.(DominantCycle);digits=0)
+    adaptive_stochastic = zeros(size(x,1))
+    n = Int64.(round.(dominant_cycle; digits=0))
     @inbounds for i = n[1]:size(x,1)
         k = n[i]
         HighestC[i] = maximum(Filt[i-k+1:i])
         LowestC[i] = minimum(Filt[i-k+1:i])
         Stoc[i] = (Filt[i] - LowestC[i]) / (HighestC[i] - LowestC[i])
-        AdaptiveStochastic[i] = c1*(Stoc[i] + Stoc[i-1]) / 2 + c2*AdaptiveStochastic[i-1] + c3*AdaptiveStochastic[i-2]
+        adaptive_stochastic[i] = c1*(Stoc[i] + Stoc[i-1]) / 2 + c2*adaptive_stochastic[i-1] + c3*adaptive_stochastic[i-2]
     end
-    return AdaptiveStochastic
+    return adaptive_stochastic
 end
 
 @doc """
