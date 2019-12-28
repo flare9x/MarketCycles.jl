@@ -47,6 +47,8 @@ end
         dat = Float64.(test[:, :x])
         decycler_osc_benchmark = Float64.(test[:thirty_sixty_decycle_osc])
         decycler_osc = Decycle_OSC(dat, LPPeriod=30,HPPeriod=60)
+        AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
+        AdaptiveStochastic(dat, min_lag=1, max_lag=48,LPLength=10, HPLength=48, AvgLength=3)
         decycler_osc = round.(decycler_osc; digits=2) # round same as tradestation output
         valid = ifelse.(decycler_osc .== decycler_osc_benchmark,1,0)
         @test sum(valid) == length(valid)-148 # minus lead in

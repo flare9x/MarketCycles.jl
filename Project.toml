@@ -1,5 +1,5 @@
 name = "MarketCycles"
-uuid = "5d10f61e-19f1-5905-9b38-485afc5ccbdc"
+uuid = "ac9b3a88-3e1f-57b7-8ce2-ad00cf637f7b"
 authors = ["Andrew Bannerman <bannerman1985@gmail.com>"]
 version = "0.0.2"
 
@@ -10,8 +10,8 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 julia = "^1.2"
-DataFrames = "^0.20.0"
-CSV = "^0.5.21"
+DataFrames = "^0.18.0"
+CSV = "^0.5.0"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
