@@ -416,7 +416,7 @@ function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=1, max_lag::
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
     # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = 96:size(x,1)
+    @inbounds for i = max_lag:size(x,1)
         AutoCorrOut[i,j] = cor(lagged[i-j+1:i], Filt[i-j+1:i])
         # Scale each correlation to range between 0 and 1
         AutoCorrOut[i,j]= .5*(AutoCorrOut[i,j] + 1)
@@ -468,14 +468,14 @@ Autocorrelation Periodogram- Equation 8-3
 """
 function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,HPPeriod::Int64=48, LPPeriod::Int64=10)::Array{Float64}
         @assert max_lag<size(x,1) && max_lag>0 "Argument max_lag out of bounds."
-        alpha1 = (cosd(.707*360 / 48) + sind(.707*360 / 48) - 1) / cosd(.707*360 / 48)
+        alpha1 = (cosd(.707*360 / HPPeriod) + sind(.707*360 / HPPeriod) - 1) / cosd(.707*360 / HPPeriod)
         HP = zeros(size(x,1))
         @inbounds for i = 3:size(x,1)
             HP[i] = (1 - alpha1 / 2)*(1 - alpha1 / 2)*(x[i] - 2*x[i-1] +x[i-2]) + 2*(1 - alpha1)*HP[i-1] - (1 - alpha1)*(1 - alpha1)*HP[i-2]
         end
         # Smooth with a Super Smoother Filter from equation 3-3
-        a1 = exp(-1.414*3.14159 / 10)
-        b1 = 2*a1*cosd(1.414*180 / 10)
+        a1 = exp(-1.414*3.14159 / LPPeriod)
+        b1 = 2*a1*cosd(1.414*180 / LPPeriod)
         c2 = b1
         c3 = -a1*a1
         c1 = 1 - c2 - c3
@@ -552,7 +552,7 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
-    for j = 10:48
+    for j = min_lag:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
@@ -602,7 +602,7 @@ function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
     # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = 96:size(x,1)
+    @inbounds for i = AvgLength:size(x,1)
         Avg_Corr_Rev_Out[i,j] = cor(lagged[i-AvgLength+1:i], Filt[i-AvgLength+1:i])
         # Scale each correlation to range between 0 and 1
         Avg_Corr_Rev_Out[i,j] = .5*(Avg_Corr_Rev_Out[i,j] + 1)
@@ -612,7 +612,7 @@ function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::
     # mark all > .5 and <.5 crossings
     SumDeltas = zeros(size(x,1), max_lag)
     @inbounds for j = lags
-        @inbounds for i = 96:size(x,1)
+        @inbounds for i = AvgLength:size(x,1)
             if (Avg_Corr_Rev_Out[i,j] > 0.5) && (Avg_Corr_Rev_Out[i-1,j] < 0.5) || (Avg_Corr_Rev_Out[i,j] < 0.5) && (Avg_Corr_Rev_Out[i-1,j] > 0.5)
                 SumDeltas[i,j] = 1.0
             else
@@ -635,11 +635,11 @@ function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::
 end
 
 @doc """
-DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
+DFTS(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
 
 Discrete Fourier Transform Sprectral Estimate - Equation 9-1
 """
-function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
+function DFTS(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, LPLength::Int64=10, HPLength::Int64=48)::Array{Float64}
         @assert HPLength<size(x,1) && HPLength>0 "Argument n out of bounds."
 # Highpass filter cyclic components whose periods are shorter than 48 bars
     alpha1 = (cosd(.707*360 / HPLength) + sind(.707*360 / HPLength) - 1) / cosd(.707*360 / HPLength)
@@ -659,12 +659,12 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
     end
 
     # Initialize matrix
-    CosinePart = zeros(size(x,1), HPLength)
-    SinePart = zeros(size(x,1), HPLength)
-    Pwr = zeros(size(x,1), HPLength)
+    CosinePart = zeros(size(x,1), max_lag)
+    SinePart = zeros(size(x,1), max_lag)
+    Pwr = zeros(size(x,1), max_lag)
     # This is the DFT
-    @inbounds for j = 10:48
-    @inbounds for k = 0:47
+    @inbounds for j = min_lag:max_lag
+    @inbounds for k = 1:max_lag
         lagged_filt = [fill(0,k); Filt[1:length(Filt)-k]]
         CosinePart[:,j] .= CosinePart[:,j] .+ lagged_filt .* cosd(360 * k / j) / j
         SinePart[:,j] .= SinePart[:,j] .+ lagged_filt .* sind(360 * k / j) / j
@@ -673,8 +673,8 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
     end
     # Find Maximum Power Level for Normalization
     # Note difers from TS output
-    MaxPwr = zeros(size(x,1), 48)
-    @inbounds for j = 8:48
+    MaxPwr = zeros(size(x,1), max_lag)
+    @inbounds for j = min_lag:max_lag
     @inbounds for i = 2:size(x,1)
     MaxPwr[i,j]  = .995*MaxPwr[i-1,j]
         if Pwr[i,j]  > MaxPwr[i,j]
@@ -685,7 +685,7 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
 
 #+_+_+_+_+_+_+_+_+_+_+_+_ unable to validate the below against TS
     #Normalize Power Levels and Convert to Decibels
-    @inbounds for j = 10:48
+    @inbounds for j = min_lag:max_lag
         @inbounds for i = 1:size(x,1)
             if MaxPwr[i,j] != 0
                 Pwr[i,j] = Pwr[i,j] / MaxPwr[i,j]
@@ -696,7 +696,7 @@ function DFTS(x::Array{Float64}; LPLength::Int64=10, HPLength::Int64=48)::Array{
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
-    for j = 10:48
+    for j = min_lag:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
@@ -811,7 +811,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
-    for j = 5:max_lag
+    for j = min_lag:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
@@ -883,14 +883,7 @@ end
 Adaptive Stochastic - Equation 11-2
 Adjust the stochastic lookback period by the same value as the dominant cycle
 """
-
 function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
-    x = dat
-    HPLength=48
-    AvgLength=3
-    LPLength=10
-    min_lag=1
-    max_lag=48
     @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
     alpha1 = (cosd(.707*360 / HPLength) + sind(.707*360 / HPLength) - 1) / cosd(.707*360 / HPLength)
     HP = zeros(size(x,1))
@@ -974,7 +967,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
-    for j = 10:48
+    for j = min_lag:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
     end
