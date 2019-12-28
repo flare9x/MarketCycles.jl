@@ -91,24 +91,25 @@ using MarketCycles
 using Gadfly
 
 # Generate dummy data
-srand(121)
+using Random
+Random.seed!(1234)
 n = 1000
-op = 100.0 + cumsum(randn(n))
+op = 100.0 .+ cumsum(randn(n))
 hi = op + rand(n)
 lo = op - rand(n)
-cl = 100.0 + cumsum(randn(n))
+cl = 100.0 .+ cumsum(randn(n))
 index = collect(1:1:length(cl))
 for i = 1:n
-    if cl[i] > hi[i]
-        cl[i] = hi[i]
-    elseif cl[i] < lo[i]
-        cl[i] = lo[i]
+ if cl[i] > hi[i]
+     cl[i] = hi[i]
+ elseif cl[i] < lo[i]
+     cl[i] = lo[i]
     end
 end
 
 
 # Apply autocorrelation reversals function
-auto_cor_reversals = AutoCorrelationReversals(cl,min_lag=1,max_lag=48,LPLength=10,HPLength=48,AvgLength=3)
+auto_cor_reversals = AutoCorrelationReversals(cl; min_lag=1, max_lag=48, LPPeriod=10, HPPeriod=48, AvgLength=3)
 
 # Plot
 white_panel = Theme(
