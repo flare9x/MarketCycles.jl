@@ -47,8 +47,7 @@ Currently the original indicators shared in his book: Cycle Analytics for Trader
 
 ## Usage
    ```julia
-   ]
-add https://github.com/flare9x/MarketCycles.jl
+Pkg.add(PackageSpec(url="https://github.com/flare9x/MarketCycles.jl", rev="master"))
 ```
 
 Each indicator function requires an input of a single dimension array of Float64 type. Call ```@doc function_name``` to see the associated documentation for each specific indicator. A list of indicator function names can be found at the bottom of the page. Here is an exmaple of calling the @doc for AutoCorrelationReversals:
