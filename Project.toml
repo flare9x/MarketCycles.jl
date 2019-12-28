@@ -1,7 +1,7 @@
 name = "MarketCycles"
 uuid = "5d10f61e-19f1-5905-9b38-485afc5ccbdc"
 authors = ["Andrew Bannerman <bannerman1985@gmail.com>"]
-version = "1.2.0"
+version = "0.0.2"
 
 [deps]
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
