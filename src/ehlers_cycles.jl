@@ -416,7 +416,7 @@ function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=3, max_lag::
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
     # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = 96:size(x,1)
+    @inbounds for i = max_lag:size(x,1)
         AutoCorrOut[i,j] = cor(lagged[i-j+1:i], Filt[i-j+1:i])
         # Scale each correlation to range between 0 and 1
         AutoCorrOut[i,j]= .5*(AutoCorrOut[i,j] + 1)
@@ -493,7 +493,7 @@ function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=3, max_lag
             # Lag series
             lagged = [fill(0,j); Filt[1:length(Filt)-j]]
         # Roll correlation width of lag and lagged version of itself
-        @inbounds for i = 96:size(x,1)
+        @inbounds for i = max_lag:size(x,1)
             Avg_Corr_Out[i,j] = cor(lagged[i-avglength+1:i], Filt[i-avglength+1:i])
             end
         end
@@ -753,7 +753,7 @@ function AdaptiveRSI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
         # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = 96:size(x,1)
+    @inbounds for i = max_lag:size(x,1)
         Avg_Corr_Out[i,j] = cor(lagged[i-AvgLength+1:i], Filt[i-AvgLength+1:i])
         end
     end
@@ -909,7 +909,7 @@ function AdaptiveStochastic(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
         # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = 96:size(x,1)
+    @inbounds for i = max_lag:size(x,1)
         Avg_Corr_Out[i,j] = cor(lagged[i-AvgLength+1:i], Filt[i-AvgLength+1:i])
         end
     end

@@ -152,9 +152,9 @@ end
         autocorr_p48 = round.(autocorr_p48;digits=4) # round same as tradestation output
         autocorr_p10 = round.(autocorr_p10;digits=4) # round same as tradestation output
         valid = ifelse.(autocorr_p10 .== Autocor_p10_benchmark,1,0)
-        @test sum(valid) == length(valid)-124  # 124 bar lead in period
+        @test sum(valid) == length(valid)-172  # 124 bar lead in period
         valid = ifelse.(autocorr_p48 .== Autocor_p48_benchmark,1,0)
-        @test sum(valid) == length(valid)-185  # 185 bar lead in period
+        @test sum(valid) == length(valid)-233 # 185 bar lead in period
     end
 
     @testset "Single Lag Autocorrelation - Equation 8-3" begin
@@ -166,7 +166,7 @@ end
         autocorr_p10 = Autocor_ind_out[:,10]
         autocorr_p10 = round.(autocorr_p10;digits=4) # round same as tradestation output
         valid = ifelse.(autocorr_p10 .== Autocor_p10_benchmark,1,0)
-        @test sum(valid) == length(valid)-124  # 124 bar lead in period
+        @test sum(valid) == length(valid)-172  # 124 bar lead in period
     end
 
     # to do - fix MaxPwr calculation for Autocorrelation Peeriodogram 8-3
