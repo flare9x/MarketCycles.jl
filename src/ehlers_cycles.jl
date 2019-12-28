@@ -391,7 +391,7 @@ end
 
 Autocorrelation Indicator - Equation 8-2
 """
-function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, HPPeriod::Int64=48, LPPeriod::Int64=10)::Array{Float64}
+function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=3, max_lag::Int64=48, HPPeriod::Int64=48, LPPeriod::Int64=10)::Array{Float64}
     @assert max_lag<size(x,1) && max_lag>0 "Argument max_lag out of bounds."
     # Highpass filter cyclic components whose periods areshorter than 48 bars
     alpha1 = (cosd(.707*360 / HPPeriod) + sind(.707*360 / HPPeriod) - 1) / cosd(.707*360 / HPPeriod)
@@ -416,7 +416,7 @@ function AutoCorrelationIndicator(x::Array{Float64}; min_lag::Int64=1, max_lag::
     # Lag series
         lagged = [fill(0,j); Filt[1:length(Filt)-j]]
     # Roll correlation width of lag and lagged version of itself
-    @inbounds for i = max_lag:size(x,1)
+    @inbounds for i = 96:size(x,1)
         AutoCorrOut[i,j] = cor(lagged[i-j+1:i], Filt[i-j+1:i])
         # Scale each correlation to range between 0 and 1
         AutoCorrOut[i,j]= .5*(AutoCorrOut[i,j] + 1)
@@ -466,7 +466,7 @@ end
 
 Autocorrelation Periodogram- Equation 8-3
 """
-function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,HPPeriod::Int64=48, LPPeriod::Int64=10)::Array{Float64}
+function AutoCorrelationPeriodogram(x::Array{Float64}; min_lag::Int64=3, max_lag::Int64=48,HPPeriod::Int64=48, LPPeriod::Int64=10)::Array{Float64}
         @assert max_lag<size(x,1) && max_lag>0 "Argument max_lag out of bounds."
         alpha1 = (cosd(.707*360 / HPPeriod) + sind(.707*360 / HPPeriod) - 1) / cosd(.707*360 / HPPeriod)
         HP = zeros(size(x,1))
@@ -577,7 +577,7 @@ The AvgLength parameter is also made available as an indicator because this aver
 Care should be taken when increasing the value of this input because the lag of the indicator increases in direct proportion to the increase of the value of the AvgLength.
 Typical delay of the indicator will be about three bars when the AvgLength parameter is set to a value of 3.
 """
-function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48, LPPeriod::Int64=10, HPPeriod::Int64=48, AvgLength::Int64=3)::Array{Float64}
+function AutoCorrelationReversals(x::Array{Float64}; min_lag::Int64=3, max_lag::Int64=48, LPPeriod::Int64=10, HPPeriod::Int64=48, AvgLength::Int64=3)::Array{Float64}
     @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
     # Highpass filter cyclic components whose periods are shorter than 48 bars
     alpha1 = (cosd(.707*360 / HPPeriod) + sind(.707*360 / HPPeriod) - 1) / cosd(.707*360 / HPPeriod)

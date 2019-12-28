@@ -178,7 +178,7 @@ end
         Autocor_reversals_benchmark = Float64.(test[:,:autocor_reversal])
         Autocor_reversals_out = AutoCorrelationReversals(dat)
         valid = ifelse.(Autocor_reversals_out .== Autocor_reversals_benchmark,1,0)
-        @test sum(valid) == length(valid)-110  # 110 bar lead in period
+        @test sum(valid) == length(valid)-8  # adjust for lead in times
     end
 
     # TO DO- fix MaxPwr calculation for DFT Spectral Estimate
