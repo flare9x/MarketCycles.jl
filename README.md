@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl) 
+[![Build Status](https://travis-ci.org/flare9x/MarketCycles.jl.svg?branch=master)](https://travis-ci.org/flare9x/MarketCycles.jl)
+[![HitCount](http://hits.dwyl.com/flare9x/https://githubcom/flare9x/MarketCyclesjl.svg)](http://hits.dwyl.com/flare9x/https://githubcom/flare9x/MarketCyclesjl)
 
 # MarketCycles
 
