@@ -26,13 +26,13 @@ Currently the original indicators shared in his book: Cycle Analytics for Trader
     *   Autocorrelation Reversals
     *   Adaptive RSI
     *   Adaptive Stochastic Indicator
+    *   Adaptive CCI Indicator
     *   Fisher Transform (Price)
 
 *   TO DO
     *   Dominant Cycle - Fix DC Portion
     *   DFT Spectral Estimate - Fix MaxPwr Calculation 
     *   Comb Filter Spectral Estimate
-    *   Adaptive CCI
     *   Adaptive Band Pass Filter
     *   Even Better SineWave Indicator
     *   Compute and Display Convolution
@@ -120,7 +120,7 @@ white_panel = Theme(
 )
 p1 = plot(x=index,y=cl,Geom.line,
 Guide.xlabel(nothing), Guide.ylabel("Price"), Guide.title("Dummy Data"),white_panel)
-p2 = plot(x=index,y=auto_cor_reversals,Geom.line,Guide.xlabel("Time Index"),Guide.title("Autocorrelation Reversals"), Guide.ylabel("Autocorrelation Reversals"),white_panel)
+p2 = plot(x=index,y=auto_cor_reversals,Geom.line,Guide.xlabel("Time Index"),Guide.title("Autocorrelation Reversals"),white_panel)
 out = vstack(p1,p2)
 
 # Save Plot
@@ -137,7 +137,7 @@ For the output:
     SuperSmoother, Decycler, Decycle_OSC, BandPassFilter, DominantCycle, HurstCoefficient, HPLPRoofingFilter,
     ZeroMeanRoofingFilterK0, ZeroMeanRoofingFilterK1, RoofingFilterIndicator,
     ModifiedStochastic, ModifiedRSI, AutoCorrelationIndicator, SingleLagAutoCorrelationIndicator, AutoCorrelationPeriodogram,
-    AutoCorrelationReversals, DFTS, AdaptiveRSI, AdaptiveStochastic
+    AutoCorrelationReversals, DFTS, AdaptiveRSI, AdaptiveStochastic, AdaptiveCCI
 ```
 Feel free to explore any of the functions with:
 
