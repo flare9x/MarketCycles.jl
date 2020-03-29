@@ -27,13 +27,13 @@ Currently the original indicators shared in his book: Cycle Analytics for Trader
     *   Adaptive RSI
     *   Adaptive Stochastic Indicator
     *   Adaptive CCI Indicator
+    *   Adaptive Band Pass Filter
     *   Fisher Transform (Price)
 
 *   TO DO
     *   Dominant Cycle - Fix DC Portion
     *   DFT Spectral Estimate - Fix MaxPwr Calculation 
     *   Comb Filter Spectral Estimate
-    *   Adaptive Band Pass Filter
     *   Even Better SineWave Indicator
     *   Compute and Display Convolution
     *   Classic Hilbert Transformer
