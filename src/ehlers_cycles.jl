@@ -1091,6 +1091,8 @@ function AdaptiveCCI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     # Compute the dominant cycle using the CG of the spectrum
     Spx = zeros(size(x,1))
     Sp = zeros(size(x,1))
+
+    Pwr[:,1]
     for j = min_lag:max_lag
         Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
         Sp .= ifelse.(Pwr[:,j] .>= 0.5,Sp .+ Pwr[:,j],Sp)
@@ -1101,7 +1103,7 @@ function AdaptiveCCI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         if Sp[i] != 0
             dominant_cycle[i] = Spx[i] / Sp[i]
         end
-    if dominant_cycle[i] < 10
+    if dominant_cycle[i] < 10 || isnan(dominant_cycle[i]) == true
         dominant_cycle[i] = 10
     end
     if dominant_cycle[i] > max_lag
@@ -1109,7 +1111,6 @@ function AdaptiveCCI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
     end
     end
 
-    # Stochastic Computation starts here
     # Adaptive CCI starts here, using half the measured dominant cycle for tuning
     num = zeros(size(x,1))
     denom = zeros(size(x,1))
@@ -1128,7 +1129,157 @@ function AdaptiveCCI(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLe
         adaptive_CCI[i] = c1*(ratio[i] + ratio[i-1]) / 2 + c2*adaptive_CCI[i-1] + c3*adaptive_CCI[i-2]
     end
 
+    p1 = plot(y=adaptive_CCI,Geom.line)
+    p2 = plot(y=x,Geom.line)
+    out = vstack(p1,p2)
+
     return adaptive_CCI
+end
+
+
+@doc """
+    AdaptiveBPFilter(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3)::Array{Float64}
+
+Adaptive BandPass Filter - Equation 11-4
+Tune filter to the measured dominant cycle
+"""
+function AdaptiveBPFilter(x::Array{Float64}; min_lag::Int64=1, max_lag::Int64=48,LPLength::Int64=10, HPLength::Int64=48, AvgLength::Int64=3, bandwidth::Float64=.3)::Array{Float64}
+    @assert max_lag<size(x,1) && max_lag>0 "Argument n out of bounds."
+    alpha1 = (cosd(.707*360 / HPLength) + sind(.707*360 / HPLength) - 1) / cosd(.707*360 / HPLength)
+    HP = zeros(size(x,1))
+    @inbounds for i = 3:size(x,1)
+        HP[i] = (1 - alpha1 / 2)*(1 - alpha1 / 2)*(x[i] - 2*x[i-1] +x[i-2]) + 2*(1 - alpha1)*HP[i-1] - (1 - alpha1)*(1 - alpha1)*HP[i-2]
+    end
+    # Smooth with a Super Smoother Filter from equation 3-3
+    a1 = exp(-1.414*3.14159 / LPLength)
+    b1 = 2*a1*cosd(1.414*180 / LPLength)
+    c2 = b1
+    c3 = -a1*a1
+    c1 = 1 - c2 - c3
+    Filt = zeros(size(x,1))
+    @inbounds for i = 3:size(x,1)
+        Filt[i] = c1*(HP[i] + HP[i-1]) / 2 + c2*Filt[i-1] + c3*Filt[i-2]
+    end
+    # Pearson correlation for each value of lag
+    # Initialize correlation sums
+    lags = min_lag:max_lag
+    temp = zeros(size(x,1))
+    Avg_Corr_Out = zeros(size(x,1), max_lag)
+    @inbounds for j = lags
+    # Lag series
+        lagged = [fill(0,j); Filt[1:length(Filt)-j]]
+        # Roll correlation width of lag and lagged version of itself
+    @inbounds for i = max_lag:size(x,1)
+        Avg_Corr_Out[i,j] = cor(lagged[i-AvgLength+1:i], Filt[i-AvgLength+1:i])
+        end
+    end
+
+    # Calcualte sine and cosine part
+    cosinePart = zeros(size(x,1), max_lag)
+    sinePart = zeros(size(x,1), max_lag)
+    sqSum = zeros(size(x,1), max_lag)
+    @inbounds for j = min_lag:max_lag
+        @inbounds for k = 3:max_lag
+            cosinePart[:,j] .= cosinePart[:,j] .+ Avg_Corr_Out[:,k] .* cosd(370 * k / j)
+            sinePart[:,j] .= sinePart[:,j] .+ Avg_Corr_Out[:,k] .* sind(370 * k / j)
+            sqSum[:,j] .= cosinePart[:,j].^2 .+ sinePart[:,j].^2
+        end
+    end
+
+    # Iterate over every i in j and smooth R by the .2 and .8 factors
+    R = zeros(size(x,1), max_lag)
+    @inbounds for j = min_lag:max_lag
+        @inbounds for i = 2:size(x,1)
+            R[i,j] = (.2 * sqSum[i,j]) * (sqSum[i,j]) + (.8 *R[i-1,j])
+        end
+    end
+
+    #### validated ^^^^^ ###############
+    # Find Maximum Power Level for Normalization
+    # need to validate this and below!
+    MaxPwr = zeros(size(x,1), max_lag)
+    #MaxPwr = 0
+    @inbounds for j = min_lag:max_lag
+        @inbounds for i = 2:size(x,1)
+            MaxPwr[i,j] = .995*MaxPwr[i-1,j]
+        if R[i,j] > MaxPwr[i,j]
+            MaxPwr[i,j]= R[i,j]
+            end
+        end
+    end
+
+    Pwr = zeros(size(x,1), max_lag)
+    @inbounds for j = min_lag:max_lag
+        @inbounds for i = 2:size(x,1)
+            Pwr[i,j] = R[i-1,j] / MaxPwr[i,j]
+        end
+    end
+
+    # Replace Nan to 0
+    @inbounds for j = 1:max_lag
+        @inbounds for i = 1:size(x,1)
+    if isnan(Pwr[i,j]) == 1
+        Pwr[i,j] = 0.0
+    else
+        Pwr[i,j] = Pwr[i,j]
+            end
+        end
+    end
+
+    # Compute the dominant cycle using the CG of the spectrum
+    Spx = zeros(size(x,1))
+    Sp = zeros(size(x,1))
+    for j = min_lag:max_lag
+        Spx .= ifelse.(Pwr[:,j] .>= 0.5, Spx .+ j .* Pwr[:,j],Spx)
+        Sp .= ifelse.(Pwr[:,j] .>= 0.5, Sp .+ Pwr[:,j],Sp)
+    end
+
+    dominant_cycle = zeros(size(x,1))
+    for i = 1:size(x,1)
+        if Sp[i] != 0.0
+            dominant_cycle[i] = Spx[i] / Sp[i]
+        end
+    if dominant_cycle[i] < 10
+        dominant_cycle[i] = 10
+    end
+    if dominant_cycle[i] > max_lag
+        dominant_cycle[i] = max_lag
+    end
+    end
+
+    # Adaptive BandPass indicator tunes a BandPass filter to 90% of the period of the Dominant Cycle
+    beta1 = cosd.(360 ./ (.9 .* dominant_cycle))
+    gamma1 = 1 ./ cosd.(360 .* bandwidth ./ (.9 .* dominant_cycle))
+    alpha2 = gamma1 .- sqrt.((gamma1 .* gamma1) .- 1)
+    BP = zeros(size(x,1))
+    peak = zeros(size(x,1))
+    signal = zeros(size(x,1))
+    lead = zeros(size(x,1))
+    lead_peak = zeros(size(x,1))
+    lead_signal = zeros(size(x,1))
+    @inbounds for i = 4:size(x,1)
+        BP[i] = .5*(1.0 - alpha2[i])*(Filt[i] - Filt[i-2]) + beta1[i]*(1.0 + alpha2[i])*BP[i-1] - alpha2[i]*BP[i-2]
+        peak[i] = .991 * peak[i-1]
+        if abs(BP[i]) > peak[i]
+            peak[i] = abs(BP[i])
+        end
+        if peak[i] != 0.0
+            signal[i] = BP[i] / peak[i]
+        end
+
+        lead[i] = 1.3*(signal[i] + signal[i-1] - signal[i-2] - signal[i-3]) / 4
+
+        lead_peak[i] = .93 * lead_peak[i-1]
+            if abs(lead[i]) > lead_peak[i]
+                lead_peak[i] = abs(lead[i])
+            end
+            if lead_peak[i] != 0.0
+                lead_signal[i] = .7*lead[i] / lead_peak[i]
+            end
+
+    end
+
+    return signal
 end
 
 @doc """
